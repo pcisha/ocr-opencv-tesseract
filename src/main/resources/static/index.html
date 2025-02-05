@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OCR Image to Text Converter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            padding: 20px;
+            text-align: center;
+        }
+
+        #uploadForm {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+        }
+
+        #resultContainer {
+            display: none;
+            margin-top: 20px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 600px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            resize: none;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>OCR Image Processing</h1>
+
+    <form id="imageUploadForm" enctype="multipart/form-data">
+        <input type="file" id="imageFile" name="imageFile" accept="image/*" required><br><br>
+        <button type="submit">Upload & Convert</button>
+    </form>
+
+    <div id="convertedTextContainer">
+        <h2>Image contains the following text:</h2>
+        <textarea id="convertedText" readonly></textarea>
+    </div>
+
+    <footer>
+        &copy; 2025 Prachi Shah. All Rights Reserved.
+    </footer>
+
+    <script>
+        document.getElementById('imageUploadForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            const fileInput = document.getElementById('imageFile');
+            const file = fileInput.files[0];
+            if (!file) {
+                alert('Upload an image file (.jpg, .png supported, max file size is 5MB):');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('imageFile', file);
+
+            fetch('api/ocr/upload', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Cannot upload image with size >5MB.');
+                    }
+                    return response.text();
+                })
+                .then(text => {
+                    document.getElementById('convertedTextContainer').style.display = 'block';
+                    document.getElementById('convertedText').value = text;
+                })
+                .catch(error => {
+                    alert('Error: ' + error.message);
+                });
+        });
+    </script>
+
+</body>
+
+</html>
